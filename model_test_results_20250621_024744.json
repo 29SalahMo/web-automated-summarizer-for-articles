@@ -1,0 +1,150 @@
+{
+  "timestamp": "2025-06-21T02:47:44.400579",
+  "model_stats": {
+    "bart": {
+      "success_rate": 100.0,
+      "avg_time": 8.441835403442383,
+      "avg_similarity": 95.14507253964743,
+      "avg_compression": 58.3044256395305
+    },
+    "t5": {
+      "success_rate": 100.0,
+      "avg_time": 5.886052290598552,
+      "avg_similarity": 79.58893577257791,
+      "avg_compression": 48.30516448073627
+    },
+    "pegasus": {
+      "success_rate": 100.0,
+      "avg_time": 15.807755072911581,
+      "avg_similarity": 72.77510960896811,
+      "avg_compression": 56.94583674862691
+    },
+    "arabic": {
+      "success_rate": 100.0,
+      "avg_time": 10.216497977574667,
+      "avg_similarity": 71.4069147904714,
+      "avg_compression": 36.121106864012816
+    }
+  },
+  "detailed_results": {
+    "short": {
+      "bart": {
+        "summary": "Artificial intelligence is transforming the way we live and work. Machine learning algorithms can now process vast amounts of data to make predictions and automate complex tasks. This technology is being applied across industries from healthcare to finance. It can also be used to predict and predict future events in real-time.",
+        "processing_time": 12.771497249603271,
+        "compression_ratio": 1.2762645914396886,
+        "word_count_original": 38,
+        "word_count_summary": 51,
+        "semantic_similarity": 0.9884651899337769,
+        "success": true
+      },
+      "t5": {
+        "summary": "machine learning algorithms can now process vast amounts of data to make predictions and automate complex tasks . this technology is being applied across industries from healthcare to finance . the technology is transforming the way we live and work, says nicolaus mills .",
+        "processing_time": 6.050527811050415,
+        "compression_ratio": 1.0583657587548638,
+        "word_count_original": 38,
+        "word_count_summary": 44,
+        "semantic_similarity": 0.8936187624931335,
+        "success": true
+      },
+      "pegasus": {
+        "summary": "Machine learning algorithms can now process vast amounts of data to make predictions and automate complex tasks .<n>This technology is being applied across industries from healthcare to finance .<n>Machine learning algorithms can now process vast amounts of data to make predictions and automate complex tasks .",
+        "processing_time": 11.037337303161621,
+        "compression_ratio": 1.2101167315175096,
+        "word_count_original": 38,
+        "word_count_summary": 46,
+        "semantic_similarity": 0.8368434906005859,
+        "success": true
+      },
+      "arabic": {
+        "summary": "Artificial intelligence is being rolled out across the world, according to the UK's National Institute of Technology (NTech) in a bid to increase the number of people using the technology in our lives.",
+        "processing_time": 11.376125574111938,
+        "compression_ratio": 0.7821011673151751,
+        "word_count_original": 38,
+        "word_count_summary": 33,
+        "semantic_similarity": 0.6823174357414246,
+        "success": true
+      }
+    },
+    "medium": {
+      "bart": {
+        "summary": "The COVID-19 pandemic has fundamentally changed the global landscape in unprecedented ways. Governments worldwide implemented lockdowns, travel restrictions, and social distancing measures. The healthcare system faced immense pressure as hospitals overflowed with patients. Economic activity ground to a halt, leading to widespread job losses and business closures.",
+        "processing_time": 6.326367139816284,
+        "compression_ratio": 0.35609756097560974,
+        "word_count_original": 142,
+        "word_count_summary": 47,
+        "semantic_similarity": 0.9168146848678589,
+        "success": true
+      },
+      "t5": {
+        "summary": "the pandemic first emerged in late 2019, few could have predicted the scale of its impact . the healthcare system faced immense pressure as hospitals overflowed with patients . remote work became the new normal for many industries, accelerating the adoption of digital technologies .",
+        "processing_time": 4.308505296707153,
+        "compression_ratio": 0.2760975609756098,
+        "word_count_original": 142,
+        "word_count_summary": 45,
+        "semantic_similarity": 0.6876572370529175,
+        "success": true
+      },
+      "pegasus": {
+        "summary": "Governments worldwide implemented lockdowns, travel restrictions, and social distancing measures to curb the spread .<n>Pandemic also highlighted existing inequalities in healthcare access and economic stability .<n>Long-term effects on society, economy, and mental health continue to unfold .",
+        "processing_time": 10.874556303024292,
+        "compression_ratio": 0.28585365853658534,
+        "word_count_original": 142,
+        "word_count_summary": 37,
+        "semantic_similarity": 0.538658618927002,
+        "success": true
+      },
+      "arabic": {
+        "summary": "The impact of the coronavirus pandemic on the healthcare system has taught valuable lessons about global cooperation, scientific communication, and mental health, writes the BBC's Chris Stokel-Walker, a former chief medical officer.",
+        "processing_time": 8.714268684387207,
+        "compression_ratio": 0.22634146341463415,
+        "word_count_original": 142,
+        "word_count_summary": 32,
+        "semantic_similarity": 0.664328932762146,
+        "success": true
+      }
+    },
+    "long": {
+      "bart": {
+        "summary": "Artificial intelligence and machine learning technologies are transforming various sectors of society. These technologies enable computers to learn from data and make decisions with minimal human intervention. In healthcare, AI systems can analyze medical images to detect diseases like cancer at earlier stages than traditional methods.",
+        "processing_time": 6.227641820907593,
+        "compression_ratio": 0.11677061677061677,
+        "word_count_original": 379,
+        "word_count_summary": 46,
+        "semantic_similarity": 0.9490723013877869,
+        "success": true
+      },
+      "t5": {
+        "summary": "the rapid advancement of artificial intelligence and machine learning technologies is fundamentally transforming various sectors of society . the widespread adoption of AI also raises important ethical and societal questions . concerns about job displacement as automation replaces human workers in various industries are growing .",
+        "processing_time": 7.299123764038086,
+        "compression_ratio": 0.1146916146916147,
+        "word_count_original": 379,
+        "word_count_summary": 46,
+        "semantic_similarity": 0.8063920736312866,
+        "success": true
+      },
+      "pegasus": {
+        "summary": "Technology enables computers to learn from data and make decisions with minimal human intervention .<n>In healthcare, AI systems can analyze medical images to detect diseases like cancer at earlier stages than traditional methods .<n>In education, AI-powered tutoring systems provide personalized learning experiences tailored to individual student needs and learning styles .<n>Transportation is being revolutionized by autonomous vehicles, which use complex AI systems to navigate roads .<n>Entertainment industry has embraced AI for content creation, recommendation systems, and even scriptwriting assistance .",
+        "processing_time": 25.511371612548828,
+        "compression_ratio": 0.2124047124047124,
+        "word_count_original": 379,
+        "word_count_summary": 80,
+        "semantic_similarity": 0.8077511787414551,
+        "success": true
+      },
+      "arabic": {
+        "summary": "Artificial intelligence (AI) and machine learning technologies are becoming increasingly accessible in various industries, including healthcare, education and entertainment. The BBC's Chris Stokel-Walker looks at why.",
+        "processing_time": 10.559099674224854,
+        "compression_ratio": 0.07519057519057519,
+        "word_count_original": 379,
+        "word_count_summary": 26,
+        "semantic_similarity": 0.7955610752105713,
+        "success": true
+      }
+    }
+  },
+  "test_texts": {
+    "short": 257,
+    "medium": 1025,
+    "long": 2886
+  }
+}
