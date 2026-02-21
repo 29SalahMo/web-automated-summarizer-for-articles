@@ -1082,9 +1082,47 @@ def main():
                     """)
 
         except Exception as e:
-            st.error(f"An error occurred during summarization: {e}")
-            st.code(traceback.format_exc())
-            st.info("💡 Tip: Try with a shorter text or check if models are loading correctly.")
+            error_msg = str(e)
+            st.error(f"❌ **Summarization Error:** {error_msg}")
+            
+            # Provide helpful error messages based on error type
+            if "model" in error_msg.lower() or "load" in error_msg.lower():
+                st.warning("""
+                **Model Loading Issue Detected**
+                
+                This usually means:
+                - Models failed to load properly
+                - Network issues during model download
+                - Memory/resource constraints
+                
+                **Try:**
+                1. Refresh the page and try again
+                2. Wait a few moments (first-time model download takes time)
+                3. Check your internet connection
+                4. For Arabic: The model is large and may need more time
+                """)
+            elif "arabic" in error_msg.lower():
+                st.warning("""
+                **Arabic Summarization Issue**
+                
+                Arabic model (mT5) requires:
+                - More memory than English models
+                - Proper model initialization
+                - Correct text encoding
+                
+                **Try:**
+                1. Refresh and try again
+                2. Ensure Arabic text is properly formatted
+                3. Try with shorter text first
+                """)
+            else:
+                st.info("💡 Tip: Try with a shorter text or check if models are loading correctly.")
+            
+            with st.expander("🔍 Full Error Details"):
+                st.code(traceback.format_exc())
+            
+            # Don't raise - let user try again without refresh
+            return
 
 
 # Streamlit executes the entire file
