@@ -63,11 +63,7 @@ MODEL_OPTIONS = {
     # "pegasus": "google/pegasus-cnn_dailymail",
 }
 
-TOKENIZER_CLASSES = {
-    "bart": BartTokenizer,
-    "t5": T5Tokenizer,
-    "pegasus": PegasusTokenizer,
-}
+# TOKENIZER_CLASSES is defined in the import block above
 
 @st.cache_resource(show_spinner=False)
 def load_english_model(model_key):
@@ -306,6 +302,14 @@ def summarize_text(
 # -------------------------
 
 def main():
+    """Main Streamlit application"""
+    # Check imports first
+    if not _imports_ok:
+        st.error(f"❌ Missing required package: {_import_error}")
+        st.info("Please install all requirements: pip install -r requirements.txt")
+        return
+    
+    # Set page config first (must be first Streamlit command)
     try:
         st.set_page_config(
             page_title="Web-Based Article Summarizer",
