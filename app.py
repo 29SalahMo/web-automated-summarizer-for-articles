@@ -440,20 +440,5 @@ def main():
             st.info("💡 Tip: Try with a shorter text or check if models are loading correctly.")
 
 
-# Streamlit runs the entire file
-# Call main() - Streamlit will handle execution
-if __name__ == "__main__" or True:  # Always execute for Streamlit
-    try:
-        main()
-    except Exception as e:
-        # Show error in UI
-        try:
-            st.error(f"❌ Application Error: {str(e)}")
-            with st.expander("🔍 Show Full Error Details"):
-                st.code(traceback.format_exc())
-            st.info("💡 Please check the logs or try refreshing the page.")
-        except Exception as e2:
-            # If we can't even show error, print to console
-            print(f"CRITICAL ERROR: {str(e)}")
-            print(f"Error showing error: {str(e2)}")
-            traceback.print_exc()
+# Streamlit executes the entire file - just call main() directly
+main()
