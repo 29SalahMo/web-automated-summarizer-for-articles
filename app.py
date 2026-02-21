@@ -276,7 +276,7 @@ def summarize_text(
         summary = " ".join(summary_parts)
 
         if length == "short":
-        sentences = re.split(r"(?<=[.!?]) +", summary)
+            sentences = re.split(r"(?<=[.!?]) +", summary)
             summary = " ".join(sentences[:2]).strip()
 
         confidence = round((1 - len(summary) / len(original_text)) * 100, 2)
