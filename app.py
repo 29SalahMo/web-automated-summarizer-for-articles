@@ -102,7 +102,7 @@ def load_arabic_model():
                 "tokenizer": arabic_tokenizer,
                 "type": "manual"
             }
-except Exception as e:
+    except Exception as e:
         print(f"Warning: Failed to load Arabic model: {str(e)[:200]}")
         return None
 
