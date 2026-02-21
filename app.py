@@ -88,9 +88,9 @@ def load_arabic_model():
     if not _imports_ok:
         return None
     try:
-        arabic_model_name = "csebuetnlp/mT5_multilingual_XLSum"
-        arabic_tokenizer = AutoTokenizer.from_pretrained(arabic_model_name)
-        arabic_model = AutoModelForSeq2SeqLM.from_pretrained(arabic_model_name)
+    arabic_model_name = "csebuetnlp/mT5_multilingual_XLSum"
+    arabic_tokenizer = AutoTokenizer.from_pretrained(arabic_model_name)
+    arabic_model = AutoModelForSeq2SeqLM.from_pretrained(arabic_model_name)
         # Try pipeline first
         try:
             arabic_pipeline = pipeline("summarization", model=arabic_model, tokenizer=arabic_tokenizer)
@@ -102,7 +102,7 @@ def load_arabic_model():
                 "tokenizer": arabic_tokenizer,
                 "type": "manual"
             }
-    except Exception as e:
+except Exception as e:
         print(f"Warning: Failed to load Arabic model: {str(e)[:200]}")
         return None
 
@@ -138,12 +138,12 @@ def chunk_text(text: str, max_chunk: int = 1000, language: str = "english"):
             from nltk.tokenize import sent_tokenize
 
             nltk.download("punkt", quiet=True)
-            sentences = sent_tokenize(text)
+                sentences = sent_tokenize(text)
         except Exception:
             sentences = re.split(r"(?<=[.!?]) +", text)
-    else:
+            else:
         sentences = re.split(r"(?<=[.!?]) +", text)
-
+    
     chunks = []
     current = ""
     for sent in sentences:
@@ -192,9 +192,9 @@ def summarize_text(
             original_text = f"Summarize in a tweet style:\n{original_text}"
 
     # Pick summarizer (already loaded in main function)
-    if language == "english":
-        summarizer = summarizers.get(model_choice)
-        if not summarizer:
+        if language == "english":
+            summarizer = summarizers.get(model_choice)
+            if not summarizer:
             # Try any available English model
             for key, val in summarizers.items():
                 if key != "arabic" and val is not None:
@@ -203,7 +203,7 @@ def summarize_text(
                     break
             if not summarizer:
                 raise RuntimeError("No English models available.")
-    else:
+                else:
         arabic_data = summarizers.get("arabic")
         if not arabic_data:
             raise RuntimeError("Arabic model not available. Please check if the model loaded successfully.")
@@ -212,13 +212,13 @@ def summarize_text(
 
     # Chunking
     chunk_size = 2000 if word_count > 2000 else 1000
-    chunks = chunk_text(original_text, max_chunk=chunk_size, language=language)
+        chunks = chunk_text(original_text, max_chunk=chunk_size, language=language)
     chunks = [c for c in chunks if c.strip()]
-    if not chunks:
+        if not chunks:
         raise RuntimeError("Could not create valid chunks from input text.")
-
-    summary_parts = []
-    for i, chunk in enumerate(chunks):
+        
+        summary_parts = []
+        for i, chunk in enumerate(chunks):
         with st.spinner(f"Processing chunk {i+1}/{len(chunks)}..."):
             try:
                 if language == "arabic" and arabic_data:
@@ -272,28 +272,28 @@ def summarize_text(
                 st.error(error_msg)
                 st.code(traceback.format_exc())
                 raise RuntimeError(error_msg)
+        
+        summary = " ".join(summary_parts)
 
-    summary = " ".join(summary_parts)
-
-    if length == "short":
+        if length == "short":
         sentences = re.split(r"(?<=[.!?]) +", summary)
-        summary = " ".join(sentences[:2]).strip()
+            summary = " ".join(sentences[:2]).strip()
 
-    confidence = round((1 - len(summary) / len(original_text)) * 100, 2)
+        confidence = round((1 - len(summary) / len(original_text)) * 100, 2)
     
     # Calculate semantic similarity if embedder is available
     semantic_score = 0.0
     if embedder is not None:
         try:
-            embeddings = embedder.encode([original_text, summary], convert_to_tensor=True)
-            similarity = util.pytorch_cos_sim(embeddings[0], embeddings[1]).item()
-            semantic_score = round(similarity * 100, 2)
+        embeddings = embedder.encode([original_text, summary], convert_to_tensor=True)
+        similarity = util.pytorch_cos_sim(embeddings[0], embeddings[1]).item()
+        semantic_score = round(similarity * 100, 2)
         except Exception as e:
             print(f"Warning: Could not calculate semantic similarity: {e}")
             semantic_score = 0.0
 
     return {
-        "summary": summary,
+            "summary": summary,
         "confidence": confidence,
         "semantic_similarity": semantic_score,
         "warning": short_input_warning,
@@ -322,6 +322,159 @@ def main():
         )
     except Exception:
         pass  # Already set
+    
+    # Add custom CSS for cyberpunk background
+    st.markdown("""
+    <style>
+    .stApp {
+        background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 25%, #16213e 50%, #0f3460 75%, #0a0a1a 100%);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+        position: relative;
+    }
+    
+    .stApp::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 20% 50%, rgba(108, 99, 255, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(160, 132, 232, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 40% 20%, rgba(255, 20, 147, 0.1) 0%, transparent 50%);
+        z-index: 0;
+        pointer-events: none;
+    }
+    
+    .stApp::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(108, 99, 255, 0.03) 2px, rgba(108, 99, 255, 0.03) 4px),
+            repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(160, 132, 232, 0.03) 2px, rgba(160, 132, 232, 0.03) 4px);
+        z-index: 0;
+        pointer-events: none;
+        animation: scanlines 8s linear infinite;
+    }
+    
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    @keyframes scanlines {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(20px); }
+    }
+    
+    /* Add glowing particles effect */
+    .stApp {
+        position: relative;
+    }
+    
+    /* Make content readable with semi-transparent backgrounds */
+    .main .block-container {
+        background: rgba(10, 10, 30, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 2rem;
+        border: 1px solid rgba(108, 99, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* Style sidebar */
+    [data-testid="stSidebar"] {
+        background: rgba(10, 10, 30, 0.85);
+        backdrop-filter: blur(10px);
+        border-right: 1px solid rgba(108, 99, 255, 0.3);
+    }
+    
+    /* Style headers and text for better visibility */
+    h1, h2, h3 {
+        color: #ffffff !important;
+        text-shadow: 0 0 10px rgba(108, 99, 255, 0.5);
+    }
+    
+    /* Style buttons with cyberpunk glow */
+    .stButton > button {
+        background: linear-gradient(135deg, #6c63ff 0%, #a084e8 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 2rem;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(108, 99, 255, 0.4);
+        transition: all 0.3s ease;
+    }
+    
+    .stButton > button:hover {
+        box-shadow: 0 6px 20px rgba(108, 99, 255, 0.6);
+        transform: translateY(-2px);
+    }
+    
+    /* Style text areas and inputs */
+    .stTextArea > div > div > textarea,
+    .stSelectbox > div > div > select {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(108, 99, 255, 0.3);
+        color: #ffffff;
+        border-radius: 8px;
+    }
+    
+    .stTextArea > div > div > textarea:focus,
+    .stSelectbox > div > div > select:focus {
+        border-color: #6c63ff;
+        box-shadow: 0 0 10px rgba(108, 99, 255, 0.5);
+    }
+    
+    /* Style file uploader */
+    .stFileUploader > div {
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px dashed rgba(108, 99, 255, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+    }
+    
+    /* Make metrics stand out */
+    [data-testid="stMetricValue"] {
+        color: #a084e8 !important;
+        text-shadow: 0 0 10px rgba(160, 132, 232, 0.5);
+    }
+    
+    /* Style success/error messages */
+    .stSuccess {
+        background: rgba(76, 175, 80, 0.2);
+        border-left: 4px solid #4caf50;
+    }
+    
+    .stError {
+        background: rgba(244, 67, 54, 0.2);
+        border-left: 4px solid #f44336;
+    }
+    
+    /* Add glow to main title */
+    .stTitle {
+        text-align: center;
+    }
+    
+    .stTitle h1 {
+        background: linear-gradient(135deg, #6c63ff 0%, #a084e8 50%, #ff1493 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-shadow: 0 0 30px rgba(108, 99, 255, 0.5);
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     st.title("🌐 Web-Based Automated Article Summarizer")
     st.markdown(
@@ -461,7 +614,7 @@ def main():
                 mime="text/plain",
             )
 
-        except Exception as e:
+    except Exception as e:
             st.error(f"An error occurred during summarization: {e}")
             st.code(traceback.format_exc())
             st.info("💡 Tip: Try with a shorter text or check if models are loading correctly.")
