@@ -1,3 +1,8 @@
+"""
+Web-Based Automated Article Summarizer
+Streamlit Application
+"""
+
 import os
 import io
 import re
@@ -10,6 +15,13 @@ try:
 except ImportError:
     print("ERROR: streamlit is not installed. Please install it with: pip install streamlit")
     sys.exit(1)
+
+# Early error check - display a simple message if Streamlit context is not ready
+try:
+    # Test if Streamlit is ready
+    _ = st.__version__
+except:
+    pass  # Streamlit not initialized yet, that's okay
 
 # Import other dependencies with error handling
 try:
