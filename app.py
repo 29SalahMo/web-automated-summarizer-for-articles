@@ -138,7 +138,7 @@ def chunk_text(text: str, max_chunk: int = 1000, language: str = "english"):
             from nltk.tokenize import sent_tokenize
 
             nltk.download("punkt", quiet=True)
-                sentences = sent_tokenize(text)
+            sentences = sent_tokenize(text)
         except Exception:
             sentences = re.split(r"(?<=[.!?]) +", text)
     else:
