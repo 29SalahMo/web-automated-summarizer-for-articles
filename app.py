@@ -448,5 +448,19 @@ def main():
             st.info("💡 Tip: Try with a shorter text or check if models are loading correctly.")
 
 
-# Streamlit executes the entire file - just call main() directly
-main()
+# Streamlit executes the entire file
+# Wrap in try-except to catch ANY error and display it
+try:
+    main()
+except Exception as e:
+    # Display error in Streamlit UI
+    try:
+        st.error(f"❌ **Application Error:** {str(e)}")
+        with st.expander("🔍 Click to see full error details"):
+            st.code(traceback.format_exc())
+        st.warning("💡 If this error persists, please check the Hugging Face Spaces logs.")
+    except:
+        # If we can't even display error, at least print it
+        import sys
+        print(f"FATAL ERROR: {e}", file=sys.stderr)
+        traceback.print_exc()
