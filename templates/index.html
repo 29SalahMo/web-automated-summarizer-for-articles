@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Web-Based Article Summarizer</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+  <script src="/static/script.js" defer></script>
+  <link rel="icon" href="/static/favicon.ico" type="image/x-icon"/>
+</head>
+<body>
+  <header>
+    <h1>Web-Based Article Summarizer</h1>
+    <p>Summarize articles quickly and intelligently using AI.</p>
+    <div class="theme-toggle">
+      <label class="switch">
+        <input type="checkbox" id="theme-switch" />
+        <span class="slider round"></span>
+      </label>
+      <span class="theme-label">Light Mode</span>
+    </div>
+
+    <!-- 🎨 Theme palette switcher -->
+    <div class="palette-toggle">
+      <div class="palette-btn palette-blue" onclick="switchTheme('')"></div>
+      <div class="palette-btn palette-green" onclick="switchTheme('theme-green')"></div>
+      <div class="palette-btn palette-orange" onclick="switchTheme('theme-orange')"></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="input-section">
+      <form id="summarizer-form" method="POST" enctype="multipart/form-data">
+        <!-- Language selection -->
+        <label for="language">Select Language:</label>
+        <select name="language" id="language">
+          <option value="english" selected>English</option>
+          <option value="arabic">Arabic</option>
+        </select>
+
+        <label for="text-input">Enter your text:</label>
+        <textarea id="text-input" name="text" placeholder="Paste your article here..." rows="8"></textarea>
+        <div id="word-count">Words: 0</div>
+
+        <p><strong>OR</strong></p>
+
+        <label for="file-input">Upload a file (.pdf, .docx, .txt):</label>
+        <input type="file" id="file-input" name="file" accept=".pdf,.docx,.txt" />
+
+        <label for="length">Summary Length:
+          <span title="Short: ~50 words, Medium: ~100, Long: ~200">ℹ️</span>
+        </label>
+        <select name="length" id="length">
+          <option value="short">Short</option>
+          <option value="medium" selected>Medium</option>
+          <option value="long">Long</option>
+        </select>
+
+        <label for="model">Summarization Model:</label>
+        <select name="model" id="model">
+          <option value="bart" selected>BART</option>
+          <option value="t5">T5</option>
+          <option value="pegasus">PEGASUS</option>
+        </select>
+
+        <label for="tone">Summary Tone:</label>
+        <select name="tone" id="tone">
+          <option value="default">Default</option>
+          <option value="formal">Formal</option>
+          <option value="casual">Casual</option>
+          <option value="tweet">Tweet-style</option>
+        </select>
+
+        <div class="form-buttons">
+          <button type="submit">Summarize</button>
+          <button type="button" id="clear-btn">Clear</button>
+        </div>
+      </form>
+
+      <aside class="tips">
+        <h3>💡 Tips for Best Results</h3>
+        <ul>
+          <li>Use well-formatted articles or essays.</li>
+          <li>Choose "Long" for lengthy uploads.</li>
+          <li>Paste clean, structured content for better accuracy.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="output-section">
+      <h2>Summary Output</h2>
+      <div id="error-message" class="error-message" style="display: none;"><span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span><span class="error-text"></span></div>
+      <div id="loader" class="loader" style="display: none;"></div>
+      <div id="summary-output" class="output-box fade-in">Your summary will appear here...</div>
+      <div id="summary-word-count" class="output-box" style="margin-top: 0.5em; display: none;">Word Count: --</div>
+      <div id="confidence-score" class="output-box" style="margin-top: 1em; display: none;">Confidence: --%</div>
+      <div id="semantic-score" class="output-box" style="margin-top: 1em; display: none;">Semantic Similarity: --%</div>
+      <div class="output-actions">
+        <button id="download-btn" style="display: none;">Download Summary</button>
+        <button id="copy-btn" style="display: none;">Copy to Clipboard</button>
+      </div>
+      
+      <!-- Summary History Section -->
+      <div id="history-section" class="history-section">
+        <div class="history-header">
+          <h3>📚 Summary History</h3>
+          <button id="clear-history-btn" class="clear-history-btn" title="Clear all history">🗑️ Clear History</button>
+        </div>
+        <div id="history-list" class="history-list">
+          <!-- History items will be populated here -->
+        </div>
+        <div id="no-history" class="no-history">
+          <p>No summaries yet. Your recent summaries will appear here.</p>
+        </div>
+      </div>
+    </section>
+    <section class="help-section">
+      <h3>Help & FAQ</h3>
+      <ul>
+        <li><strong>Supported file types:</strong> PDF, DOCX, TXT (max 5MB).</li>
+        <li><strong>Summary Length:</strong> Short (~50 words), Medium (~100), Long (~200).</li>
+        <li><strong>Summary Tone:</strong> Choose the style of your summary (formal, casual, tweet-style).</li>
+        <li><strong>Confidence:</strong> Indicates how much the summary condenses the original text.</li>
+        <li><strong>Semantic Similarity:</strong> Shows how close the summary is to the original meaning.</li>
+        <li>For best results, use well-structured, clean text or documents.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p> 2025A Web-Based Automated Summarizer.</p>
+  </footer>
+</body>
+</html>
