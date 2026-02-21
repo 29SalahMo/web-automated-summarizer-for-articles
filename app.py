@@ -363,7 +363,32 @@ def main():
 
             with st.spinner("Loading models (if not already loaded)..."):
                 try:
-                    summarizers, english_loaded, arabic_loaded = load_summarizers()
+                    # Load models on demand
+                    summarizers = {}
+                    if language == "english":
+                        # Load only the selected English model
+                        summarizer = load_english_model(model_choice)
+                        if summarizer:
+                            summarizers[model_choice] = summarizer
+                        else:
+                            # Try fallback models
+                            for fallback_key in MODEL_OPTIONS.keys():
+                                if fallback_key != model_choice:
+                                    fallback = load_english_model(fallback_key)
+                                    if fallback:
+                                        summarizers[fallback_key] = fallback
+                                        model_choice = fallback_key
+                                        break
+                    else:
+                        # Load Arabic model
+                        arabic_data = load_arabic_model()
+                        if arabic_data:
+                            summarizers["arabic"] = arabic_data
+                    
+                    if not summarizers:
+                        st.error("Failed to load any models. Please check the logs or try again.")
+                        return
+                    
                     embedder = load_embedder()
                 except Exception as model_error:
                     st.error(f"Failed to load models: {str(model_error)}")
