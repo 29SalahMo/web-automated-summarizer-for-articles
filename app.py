@@ -16,6 +16,7 @@ from transformers import (
 from sentence_transformers import SentenceTransformer, util
 import PyPDF2
 import docx
+import torch
 
 
 # -------------------------
@@ -51,15 +52,24 @@ def load_summarizers():
             st.warning(f"Failed to load English model '{key}': {e}")
             summarizers[key] = None
 
-    # Arabic model
+    # Arabic model - mT5 needs special handling
     arabic_model_loaded = False
     try:
         arabic_model_name = "csebuetnlp/mT5_multilingual_XLSum"
         arabic_tokenizer = AutoTokenizer.from_pretrained(arabic_model_name)
         arabic_model = AutoModelForSeq2SeqLM.from_pretrained(arabic_model_name)
-        summarizers["arabic"] = pipeline(
-            "summarization", model=arabic_model, tokenizer=arabic_tokenizer
-        )
+        # Store both pipeline and raw model/tokenizer for flexibility
+        try:
+            # Try pipeline first
+            arabic_pipeline = pipeline("summarization", model=arabic_model, tokenizer=arabic_tokenizer)
+            summarizers["arabic"] = {"pipeline": arabic_pipeline, "type": "pipeline"}
+        except Exception:
+            # If pipeline fails, store model and tokenizer for manual generation
+            summarizers["arabic"] = {
+                "model": arabic_model,
+                "tokenizer": arabic_tokenizer,
+                "type": "manual"
+            }
         arabic_model_loaded = True
     except Exception as e:
         st.warning(f"Failed to load Arabic model: {e}")
@@ -121,6 +131,10 @@ def summarize_text(
     tone: str,
     length: str,
 ):
+    # Get Arabic data if needed
+    arabic_data = None
+    if language == "arabic":
+        arabic_data = summarizers.get("arabic")
     length_map = {
         "short": (50, 10),
         "medium": (120, 40),
@@ -154,9 +168,11 @@ def summarize_text(
             else:
                 raise RuntimeError("No English models available.")
     else:
-        summarizer = summarizers.get("arabic")
-        if not summarizer:
-            raise RuntimeError("Arabic model not available.")
+        arabic_data = summarizers.get("arabic")
+        if not arabic_data:
+            raise RuntimeError("Arabic model not available. Please check if the model loaded successfully.")
+        # Arabic will be handled in the processing loop
+        summarizer = None
 
     # Chunking
     chunk_size = 2000 if word_count > 2000 else 1000
@@ -168,8 +184,58 @@ def summarize_text(
     summary_parts = []
     for i, chunk in enumerate(chunks):
         with st.spinner(f"Processing chunk {i+1}/{len(chunks)}..."):
-            result = summarizer(chunk, max_length=max_len, min_length=min_len)
-            summary_parts.append(result[0]["summary_text"])
+            try:
+                if language == "arabic" and arabic_data:
+                    if arabic_data.get("type") == "pipeline":
+                        # Use pipeline if available
+                        arabic_pipeline = arabic_data["pipeline"]
+                        result = arabic_pipeline(chunk, max_length=max_len, min_length=min_len, do_sample=False)
+                        summary_parts.append(result[0]["summary_text"])
+                    elif arabic_data.get("type") == "manual":
+                        # Manual generation for mT5
+                        arabic_model = arabic_data["model"]
+                        arabic_tokenizer = arabic_data["tokenizer"]
+                        
+                        # Add task prefix for mT5 (XLSum format)
+                        input_text_mt5 = f"summarize: {chunk}"
+                        inputs = arabic_tokenizer(
+                            input_text_mt5, 
+                            return_tensors="pt", 
+                            max_length=512, 
+                            truncation=True,
+                            padding=True
+                        )
+                        
+                        # Move to same device as model
+                        device = next(arabic_model.parameters()).device
+                        inputs = {k: v.to(device) for k, v in inputs.items()}
+                        
+                        # Generate summary
+                        with torch.no_grad():
+                            outputs = arabic_model.generate(
+                                **inputs,
+                                max_length=max_len,
+                                min_length=min_len,
+                                num_beams=4,
+                                early_stopping=True,
+                                no_repeat_ngram_size=3
+                            )
+                        
+                        summary_text = arabic_tokenizer.decode(outputs[0], skip_special_tokens=True)
+                        summary_parts.append(summary_text)
+                    else:
+                        raise RuntimeError("Arabic model configuration error.")
+                else:
+                    # English models use pipeline
+                    if not summarizer:
+                        raise RuntimeError("Summarizer not available.")
+                    result = summarizer(chunk, max_length=max_len, min_length=min_len, do_sample=False)
+                    summary_parts.append(result[0]["summary_text"])
+            except Exception as e:
+                error_msg = f"Error processing chunk {i+1}/{len(chunks)}: {str(e)}"
+                st.error(error_msg)
+                st.code(traceback.format_exc())
+                raise RuntimeError(error_msg)
 
     summary = " ".join(summary_parts)
 
