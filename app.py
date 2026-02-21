@@ -88,9 +88,9 @@ def load_arabic_model():
     if not _imports_ok:
         return None
     try:
-    arabic_model_name = "csebuetnlp/mT5_multilingual_XLSum"
-    arabic_tokenizer = AutoTokenizer.from_pretrained(arabic_model_name)
-    arabic_model = AutoModelForSeq2SeqLM.from_pretrained(arabic_model_name)
+        arabic_model_name = "csebuetnlp/mT5_multilingual_XLSum"
+        arabic_tokenizer = AutoTokenizer.from_pretrained(arabic_model_name)
+        arabic_model = AutoModelForSeq2SeqLM.from_pretrained(arabic_model_name)
         # Try pipeline first
         try:
             arabic_pipeline = pipeline("summarization", model=arabic_model, tokenizer=arabic_tokenizer)
@@ -102,7 +102,7 @@ def load_arabic_model():
                 "tokenizer": arabic_tokenizer,
                 "type": "manual"
             }
-except Exception as e:
+    except Exception as e:
         print(f"Warning: Failed to load Arabic model: {str(e)[:200]}")
         return None
 
@@ -138,10 +138,10 @@ def chunk_text(text: str, max_chunk: int = 1000, language: str = "english"):
             from nltk.tokenize import sent_tokenize
 
             nltk.download("punkt", quiet=True)
-                sentences = sent_tokenize(text)
+            sentences = sent_tokenize(text)
         except Exception:
             sentences = re.split(r"(?<=[.!?]) +", text)
-            else:
+    else:
         sentences = re.split(r"(?<=[.!?]) +", text)
     
     chunks = []
@@ -195,26 +195,26 @@ def summarize_text(
         if language == "english":
             summarizer = summarizers.get(model_choice)
             if not summarizer:
-            # Try any available English model
-            for key, val in summarizers.items():
-                if key != "arabic" and val is not None:
-                    summarizer = val
-                    model_choice = key
-                    break
-            if not summarizer:
-                raise RuntimeError("No English models available.")
-                else:
-        arabic_data = summarizers.get("arabic")
-        if not arabic_data:
-            raise RuntimeError("Arabic model not available. Please check if the model loaded successfully.")
+                # Try any available English model
+                for key, val in summarizers.items():
+                    if key != "arabic" and val is not None:
+                        summarizer = val
+                        model_choice = key
+                        break
+                if not summarizer:
+                    raise RuntimeError("No English models available.")
+        else:
+            arabic_data = summarizers.get("arabic")
+            if not arabic_data:
+                raise RuntimeError("Arabic model not available. Please check if the model loaded successfully.")
         # Arabic will be handled in the processing loop
         summarizer = None
 
     # Chunking
     chunk_size = 2000 if word_count > 2000 else 1000
-        chunks = chunk_text(original_text, max_chunk=chunk_size, language=language)
+    chunks = chunk_text(original_text, max_chunk=chunk_size, language=language)
     chunks = [c for c in chunks if c.strip()]
-        if not chunks:
+    if not chunks:
         raise RuntimeError("Could not create valid chunks from input text.")
         
         summary_parts = []
@@ -285,9 +285,9 @@ def summarize_text(
     semantic_score = 0.0
     if embedder is not None:
         try:
-        embeddings = embedder.encode([original_text, summary], convert_to_tensor=True)
-        similarity = util.pytorch_cos_sim(embeddings[0], embeddings[1]).item()
-        semantic_score = round(similarity * 100, 2)
+            embeddings = embedder.encode([original_text, summary], convert_to_tensor=True)
+            similarity = util.pytorch_cos_sim(embeddings[0], embeddings[1]).item()
+            semantic_score = round(similarity * 100, 2)
         except Exception as e:
             print(f"Warning: Could not calculate semantic similarity: {e}")
             semantic_score = 0.0
@@ -544,7 +544,7 @@ def main():
             "Note: First run may take a while to download models. Subsequent runs are faster."
         )
 
-    tab_text, tab_file = st.tabs(["✍️ Paste Text", "📄 Upload File", "📚 Examples"])
+    tab_text, tab_file, tab_examples = st.tabs(["✍️ Paste Text", "📄 Upload File", "📚 Examples"])
 
     input_text = ""
     uploaded_file = None
