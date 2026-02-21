@@ -217,8 +217,8 @@ def summarize_text(
     if not chunks:
         raise RuntimeError("Could not create valid chunks from input text.")
         
-        summary_parts = []
-        for i, chunk in enumerate(chunks):
+    summary_parts = []
+    for i, chunk in enumerate(chunks):
         with st.spinner(f"Processing chunk {i+1}/{len(chunks)}..."):
             try:
                 if language == "arabic" and arabic_data:
