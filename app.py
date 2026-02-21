@@ -61,33 +61,33 @@ def load_summarizers():
             summarizers[key] = pipeline("summarization", model=model, tokenizer=tokenizer)
             english_models_loaded += 1
         except Exception as e:
-            st.warning(f"Failed to load English model '{key}': {e}")
+            # Don't use st.warning in cached function - use print instead
+            print(f"Warning: Failed to load English model '{key}': {e}")
             summarizers[key] = None
 
     # Arabic model - mT5 needs special handling
     arabic_model_loaded = False
     try:
         arabic_model_name = "csebuetnlp/mT5_multilingual_XLSum"
-        with st.spinner("Loading Arabic model (this may take a while)..."):
-            arabic_tokenizer = AutoTokenizer.from_pretrained(arabic_model_name)
-            arabic_model = AutoModelForSeq2SeqLM.from_pretrained(arabic_model_name)
-            # Store both pipeline and raw model/tokenizer for flexibility
-            try:
-                # Try pipeline first
-                arabic_pipeline = pipeline("summarization", model=arabic_model, tokenizer=arabic_tokenizer)
-                summarizers["arabic"] = {"pipeline": arabic_pipeline, "type": "pipeline"}
-            except Exception as pipe_error:
-                # If pipeline fails, store model and tokenizer for manual generation
-                st.info("ℹ️ Using manual generation for Arabic model (pipeline not available)")
-                summarizers["arabic"] = {
-                    "model": arabic_model,
-                    "tokenizer": arabic_tokenizer,
-                    "type": "manual"
-                }
+        arabic_tokenizer = AutoTokenizer.from_pretrained(arabic_model_name)
+        arabic_model = AutoModelForSeq2SeqLM.from_pretrained(arabic_model_name)
+        # Store both pipeline and raw model/tokenizer for flexibility
+        try:
+            # Try pipeline first
+            arabic_pipeline = pipeline("summarization", model=arabic_model, tokenizer=arabic_tokenizer)
+            summarizers["arabic"] = {"pipeline": arabic_pipeline, "type": "pipeline"}
+        except Exception as pipe_error:
+            # If pipeline fails, store model and tokenizer for manual generation
+            summarizers["arabic"] = {
+                "model": arabic_model,
+                "tokenizer": arabic_tokenizer,
+                "type": "manual"
+            }
         arabic_model_loaded = True
     except Exception as e:
         error_msg = str(e)
-        st.warning(f"⚠️ Failed to load Arabic model: {error_msg[:200]}")
+        # Don't use st.warning here as it might cause issues in cached function
+        print(f"Warning: Failed to load Arabic model: {error_msg[:200]}")
         summarizers["arabic"] = None
 
     return summarizers, english_models_loaded, arabic_model_loaded
@@ -406,10 +406,17 @@ def main():
 
 
 # Streamlit runs the entire file, so call main() directly
+# Wrap everything in try-except to catch any errors
 try:
     main()
 except Exception as e:
-    st.error(f"❌ Application Error: {str(e)}")
-    with st.expander("🔍 Show Full Error Details"):
-        st.code(traceback.format_exc())
-    st.info("💡 Please check the logs or try refreshing the page. If the error persists, check the Hugging Face Spaces logs.")
+    # If st is available, show error in UI
+    try:
+        st.error(f"❌ Application Error: {str(e)}")
+        with st.expander("🔍 Show Full Error Details"):
+            st.code(traceback.format_exc())
+        st.info("💡 Please check the logs or try refreshing the page. If the error persists, check the Hugging Face Spaces logs.")
+    except:
+        # If st is not available, print to console
+        print(f"ERROR: {str(e)}")
+        traceback.print_exc()
