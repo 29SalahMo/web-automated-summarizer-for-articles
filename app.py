@@ -703,7 +703,7 @@ def main():
                     - Average Words per Summary: {st.session_state.total_words_processed // max(1, st.session_state.summary_count):,}
                     """)
 
-    except Exception as e:
+        except Exception as e:
             st.error(f"An error occurred during summarization: {e}")
             st.code(traceback.format_exc())
             st.info("💡 Tip: Try with a shorter text or check if models are loading correctly.")
