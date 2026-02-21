@@ -1,3 +1,15 @@
+---
+title: Web-Based Automated Article Summarizer
+emoji: 📝
+colorFrom: blue
+colorTo: purple
+sdk: streamlit
+sdk_version: 1.28.0
+app_file: app.py
+pinned: false
+license: mit
+---
+
 # 🌐 Web-Based Automated Article Summarizer
 
 [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
