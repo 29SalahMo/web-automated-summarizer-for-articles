@@ -212,9 +212,9 @@ def summarize_text(
 
     # Chunking
     chunk_size = 2000 if word_count > 2000 else 1000
-        chunks = chunk_text(original_text, max_chunk=chunk_size, language=language)
+    chunks = chunk_text(original_text, max_chunk=chunk_size, language=language)
     chunks = [c for c in chunks if c.strip()]
-        if not chunks:
+    if not chunks:
         raise RuntimeError("Could not create valid chunks from input text.")
         
         summary_parts = []
