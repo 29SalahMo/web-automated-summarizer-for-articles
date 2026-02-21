@@ -88,9 +88,9 @@ def load_arabic_model():
     if not _imports_ok:
         return None
     try:
-        arabic_model_name = "csebuetnlp/mT5_multilingual_XLSum"
-        arabic_tokenizer = AutoTokenizer.from_pretrained(arabic_model_name)
-        arabic_model = AutoModelForSeq2SeqLM.from_pretrained(arabic_model_name)
+    arabic_model_name = "csebuetnlp/mT5_multilingual_XLSum"
+    arabic_tokenizer = AutoTokenizer.from_pretrained(arabic_model_name)
+    arabic_model = AutoModelForSeq2SeqLM.from_pretrained(arabic_model_name)
         # Try pipeline first
         try:
             arabic_pipeline = pipeline("summarization", model=arabic_model, tokenizer=arabic_tokenizer)
@@ -102,7 +102,7 @@ def load_arabic_model():
                 "tokenizer": arabic_tokenizer,
                 "type": "manual"
             }
-    except Exception as e:
+except Exception as e:
         print(f"Warning: Failed to load Arabic model: {str(e)[:200]}")
         return None
 
@@ -138,7 +138,7 @@ def chunk_text(text: str, max_chunk: int = 1000, language: str = "english"):
             from nltk.tokenize import sent_tokenize
 
             nltk.download("punkt", quiet=True)
-            sentences = sent_tokenize(text)
+                sentences = sent_tokenize(text)
         except Exception:
             sentences = re.split(r"(?<=[.!?]) +", text)
     else:
@@ -212,13 +212,13 @@ def summarize_text(
 
     # Chunking
     chunk_size = 2000 if word_count > 2000 else 1000
-    chunks = chunk_text(original_text, max_chunk=chunk_size, language=language)
+        chunks = chunk_text(original_text, max_chunk=chunk_size, language=language)
     chunks = [c for c in chunks if c.strip()]
-    if not chunks:
+        if not chunks:
         raise RuntimeError("Could not create valid chunks from input text.")
         
-    summary_parts = []
-    for i, chunk in enumerate(chunks):
+        summary_parts = []
+        for i, chunk in enumerate(chunks):
         with st.spinner(f"Processing chunk {i+1}/{len(chunks)}..."):
             try:
                 if language == "arabic" and arabic_data:
@@ -285,9 +285,9 @@ def summarize_text(
     semantic_score = 0.0
     if embedder is not None:
         try:
-            embeddings = embedder.encode([original_text, summary], convert_to_tensor=True)
-            similarity = util.pytorch_cos_sim(embeddings[0], embeddings[1]).item()
-            semantic_score = round(similarity * 100, 2)
+        embeddings = embedder.encode([original_text, summary], convert_to_tensor=True)
+        similarity = util.pytorch_cos_sim(embeddings[0], embeddings[1]).item()
+        semantic_score = round(similarity * 100, 2)
         except Exception as e:
             print(f"Warning: Could not calculate semantic similarity: {e}")
             semantic_score = 0.0
@@ -378,29 +378,58 @@ def main():
         font-size: 1.05rem !important;
     }
     
-    /* Sidebar select boxes - ensure text is visible */
+    /* Sidebar select boxes - ensure text is visible with high contrast */
     [data-testid="stSidebar"] .stSelectbox > div > div > select {
-        background: rgba(25, 25, 45, 0.98) !important;
-        border: 2px solid rgba(108, 99, 255, 0.6) !important;
+        background: #1a1a2e !important;
+        border: 2px solid rgba(108, 99, 255, 0.8) !important;
         color: #ffffff !important;
-        font-weight: 600 !important;
-        font-size: 1rem !important;
-        padding: 0.6rem 1rem !important;
+        font-weight: 700 !important;
+        font-size: 1.05rem !important;
+        padding: 0.7rem 1rem !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
     }
     
     [data-testid="stSidebar"] .stSelectbox > div > div > select:focus {
-        background: rgba(30, 30, 50, 0.98) !important;
+        background: #252540 !important;
         border-color: #6c63ff !important;
-        box-shadow: 0 0 20px rgba(108, 99, 255, 0.7) !important;
+        box-shadow: 0 0 25px rgba(108, 99, 255, 0.9) !important;
+        color: #ffffff !important;
+        outline: none !important;
+    }
+    
+    [data-testid="stSidebar"] .stSelectbox > div > div > select:hover {
+        background: #252540 !important;
+        border-color: rgba(108, 99, 255, 1) !important;
         color: #ffffff !important;
     }
     
-    /* Sidebar selectbox options */
+    /* Sidebar selectbox options - high contrast */
     [data-testid="stSidebar"] .stSelectbox option {
-        background: rgba(25, 25, 45, 0.98) !important;
+        background: #1a1a2e !important;
         color: #ffffff !important;
-        font-weight: 500 !important;
-        padding: 0.8rem !important;
+        font-weight: 600 !important;
+        padding: 1rem !important;
+        font-size: 1.05rem !important;
+    }
+    
+    [data-testid="stSidebar"] .stSelectbox option:hover,
+    [data-testid="stSidebar"] .stSelectbox option:focus,
+    [data-testid="stSidebar"] .stSelectbox option:checked {
+        background: #6c63ff !important;
+        color: #ffffff !important;
+    }
+    
+    /* Force sidebar select text color */
+    [data-testid="stSidebar"] select {
+        color: #ffffff !important;
+        background-color: #1a1a2e !important;
+    }
+    
+    [data-testid="stSidebar"] select option {
+        background-color: #1a1a2e !important;
+        color: #ffffff !important;
     }
     
     /* Sidebar info boxes */
@@ -488,28 +517,59 @@ def main():
         border-color: rgba(108, 99, 255, 0.8);
     }
     
-    /* Style select boxes - FIXED TEXT VISIBILITY */
+    /* Style select boxes - FIXED TEXT VISIBILITY WITH HIGH CONTRAST */
     .stSelectbox > div > div > select {
-        background: rgba(20, 20, 40, 0.95) !important;
-        border: 2px solid rgba(108, 99, 255, 0.5) !important;
+        background: #1a1a2e !important;
+        border: 2px solid rgba(108, 99, 255, 0.7) !important;
         color: #ffffff !important;
         border-radius: 8px;
-        padding: 0.5rem 1rem;
-        font-size: 1rem;
-        font-weight: 500;
+        padding: 0.6rem 1rem !important;
+        font-size: 1.05rem !important;
+        font-weight: 600 !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
     }
     
     .stSelectbox > div > div > select:focus {
+        background: #252540 !important;
         border-color: #6c63ff !important;
-        box-shadow: 0 0 15px rgba(108, 99, 255, 0.6) !important;
-        outline: none;
+        box-shadow: 0 0 20px rgba(108, 99, 255, 0.8) !important;
+        outline: none !important;
+        color: #ffffff !important;
     }
     
-    /* Style selectbox options dropdown */
-    .stSelectbox option {
-        background: rgba(20, 20, 40, 0.95) !important;
+    .stSelectbox > div > div > select:hover {
+        background: #252540 !important;
+        border-color: rgba(108, 99, 255, 0.9) !important;
         color: #ffffff !important;
-        padding: 0.5rem;
+    }
+    
+    /* Style selectbox options dropdown - ensure visibility */
+    .stSelectbox option {
+        background: #1a1a2e !important;
+        color: #ffffff !important;
+        padding: 0.8rem !important;
+        font-size: 1rem !important;
+        font-weight: 500 !important;
+    }
+    
+    .stSelectbox option:hover,
+    .stSelectbox option:focus,
+    .stSelectbox option:checked {
+        background: #6c63ff !important;
+        color: #ffffff !important;
+    }
+    
+    /* Force text color for select elements */
+    select {
+        color: #ffffff !important;
+        background-color: #1a1a2e !important;
+    }
+    
+    select option {
+        background-color: #1a1a2e !important;
+        color: #ffffff !important;
     }
     
     /* Style text areas - FIXED TEXT VISIBILITY */
@@ -937,4 +997,4 @@ if __name__ == "__main__" or True:  # Always execute for Streamlit
                 # Last resort - print to console
                 import sys
                 print(f"FATAL ERROR: {e}", file=sys.stderr)
-                traceback.print_exc()
+        traceback.print_exc()
