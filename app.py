@@ -1,9 +1,12 @@
 # Entry point for Hugging Face Spaces (Streamlit)
-# This file runs the Streamlit version of the app
+# Hugging Face Spaces looks for app.py by default, so we import the Streamlit app here
 
-import streamlit as st
+# Simply import and run the Streamlit app
 import streamlit_app
 
-# Run the Streamlit app
+# Call main() to run the app
 if __name__ == "__main__":
+    streamlit_app.main()
+else:
+    # When imported by Streamlit, ensure main is available
     streamlit_app.main()
