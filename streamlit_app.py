@@ -5,22 +5,17 @@ import sys
 import traceback
 
 import streamlit as st
-
-try:
-    from transformers import (
-        pipeline,
-        AutoModelForSeq2SeqLM,
-        PegasusTokenizer,
-        BartTokenizer,
-        T5Tokenizer,
-        AutoTokenizer,
-    )
-    from sentence_transformers import SentenceTransformer, util
-    import PyPDF2
-    import docx
-except ImportError as e:
-    st.error(f"Missing required package: {e}")
-    st.stop()
+from transformers import (
+    pipeline,
+    AutoModelForSeq2SeqLM,
+    PegasusTokenizer,
+    BartTokenizer,
+    T5Tokenizer,
+    AutoTokenizer,
+)
+from sentence_transformers import SentenceTransformer, util
+import PyPDF2
+import docx
 
 
 # -------------------------
