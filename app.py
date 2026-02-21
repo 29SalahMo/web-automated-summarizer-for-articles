@@ -24,6 +24,8 @@ except:
     pass  # Streamlit not initialized yet, that's okay
 
 # Import other dependencies with error handling
+# Don't use st.stop() here as it might cause issues - just set a flag
+_imports_ok = True
 try:
     from transformers import (
         pipeline,
@@ -38,9 +40,8 @@ try:
     import docx
     import torch
 except ImportError as e:
-    st.error(f"❌ Missing required package: {str(e)}")
-    st.info("Please install all requirements: pip install -r requirements.txt")
-    st.stop()
+    _imports_ok = False
+    _import_error = str(e)
 
 
 # -------------------------
