@@ -88,9 +88,9 @@ def load_arabic_model():
     if not _imports_ok:
         return None
     try:
-    arabic_model_name = "csebuetnlp/mT5_multilingual_XLSum"
-    arabic_tokenizer = AutoTokenizer.from_pretrained(arabic_model_name)
-    arabic_model = AutoModelForSeq2SeqLM.from_pretrained(arabic_model_name)
+        arabic_model_name = "csebuetnlp/mT5_multilingual_XLSum"
+        arabic_tokenizer = AutoTokenizer.from_pretrained(arabic_model_name)
+        arabic_model = AutoModelForSeq2SeqLM.from_pretrained(arabic_model_name)
         # Try pipeline first
         try:
             arabic_pipeline = pipeline("summarization", model=arabic_model, tokenizer=arabic_tokenizer)
