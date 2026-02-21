@@ -285,9 +285,9 @@ def summarize_text(
     semantic_score = 0.0
     if embedder is not None:
         try:
-        embeddings = embedder.encode([original_text, summary], convert_to_tensor=True)
-        similarity = util.pytorch_cos_sim(embeddings[0], embeddings[1]).item()
-        semantic_score = round(similarity * 100, 2)
+            embeddings = embedder.encode([original_text, summary], convert_to_tensor=True)
+            similarity = util.pytorch_cos_sim(embeddings[0], embeddings[1]).item()
+            semantic_score = round(similarity * 100, 2)
         except Exception as e:
             print(f"Warning: Could not calculate semantic similarity: {e}")
             semantic_score = 0.0
