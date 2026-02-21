@@ -323,66 +323,18 @@ def main():
     except Exception:
         pass  # Already set
     
-    # Add custom CSS for cyberpunk background
+    # Add custom CSS for cyberpunk background (simplified to avoid rendering issues)
     st.markdown("""
     <style>
+    /* Main app background - simplified gradient */
     .stApp {
-        background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 25%, #16213e 50%, #0f3460 75%, #0a0a1a 100%);
-        background-size: 400% 400%;
-        animation: gradientShift 15s ease infinite;
-        position: relative;
-    }
-    
-    .stApp::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: 
-            radial-gradient(circle at 20% 50%, rgba(108, 99, 255, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(160, 132, 232, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 40% 20%, rgba(255, 20, 147, 0.1) 0%, transparent 50%);
-        z-index: 0;
-        pointer-events: none;
-    }
-    
-    .stApp::after {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(108, 99, 255, 0.03) 2px, rgba(108, 99, 255, 0.03) 4px),
-            repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(160, 132, 232, 0.03) 2px, rgba(160, 132, 232, 0.03) 4px);
-        z-index: 0;
-        pointer-events: none;
-        animation: scanlines 8s linear infinite;
-    }
-    
-    @keyframes gradientShift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-    
-    @keyframes scanlines {
-        0% { transform: translateY(0); }
-        100% { transform: translateY(20px); }
-    }
-    
-    /* Add glowing particles effect */
-    .stApp {
-        position: relative;
+        background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #16213e 100%);
+        background-attachment: fixed;
     }
     
     /* Make content readable with semi-transparent backgrounds */
     .main .block-container {
-        background: rgba(10, 10, 30, 0.7);
-        backdrop-filter: blur(10px);
+        background: rgba(10, 10, 30, 0.85);
         border-radius: 15px;
         padding: 2rem;
         border: 1px solid rgba(108, 99, 255, 0.3);
@@ -391,15 +343,13 @@ def main():
     
     /* Style sidebar */
     [data-testid="stSidebar"] {
-        background: rgba(10, 10, 30, 0.85);
-        backdrop-filter: blur(10px);
+        background: rgba(10, 10, 30, 0.9);
         border-right: 1px solid rgba(108, 99, 255, 0.3);
     }
     
     /* Style headers and text for better visibility */
     h1, h2, h3 {
         color: #ffffff !important;
-        text-shadow: 0 0 10px rgba(108, 99, 255, 0.5);
     }
     
     /* Style buttons with cyberpunk glow */
@@ -445,7 +395,6 @@ def main():
     /* Make metrics stand out */
     [data-testid="stMetricValue"] {
         color: #a084e8 !important;
-        text-shadow: 0 0 10px rgba(160, 132, 232, 0.5);
     }
     
     /* Style success/error messages */
@@ -471,7 +420,16 @@ def main():
         background-clip: text;
         font-size: 2.5rem;
         font-weight: bold;
-        text-shadow: 0 0 30px rgba(108, 99, 255, 0.5);
+    }
+    
+    /* Ensure text is readable */
+    .stMarkdown, p, span, div {
+        color: #ffffff !important;
+    }
+    
+    /* Style metric labels */
+    [data-testid="stMetricLabel"] {
+        color: #cccccc !important;
     }
     </style>
     """, unsafe_allow_html=True)
