@@ -341,10 +341,125 @@ def main():
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
     }
     
-    /* Style sidebar */
+    /* Style sidebar - FIXED TEXT VISIBILITY */
     [data-testid="stSidebar"] {
-        background: rgba(15, 15, 35, 0.95);
+        background: rgba(15, 15, 35, 0.95) !important;
         border-right: 2px solid rgba(108, 99, 255, 0.4);
+    }
+    
+    /* Sidebar text - make all text visible */
+    [data-testid="stSidebar"] * {
+        color: #ffffff !important;
+    }
+    
+    /* Sidebar headers */
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] h4,
+    [data-testid="stSidebar"] h5,
+    [data-testid="stSidebar"] h6 {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Sidebar markdown text */
+    [data-testid="stSidebar"] .stMarkdown,
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] span,
+    [data-testid="stSidebar"] div {
+        color: #ffffff !important;
+    }
+    
+    /* Sidebar labels - make them very visible */
+    [data-testid="stSidebar"] label {
+        color: #e8e8e8 !important;
+        font-weight: 700 !important;
+        font-size: 1.05rem !important;
+    }
+    
+    /* Sidebar select boxes - ensure text is visible */
+    [data-testid="stSidebar"] .stSelectbox > div > div > select {
+        background: rgba(25, 25, 45, 0.98) !important;
+        border: 2px solid rgba(108, 99, 255, 0.6) !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+        padding: 0.6rem 1rem !important;
+    }
+    
+    [data-testid="stSidebar"] .stSelectbox > div > div > select:focus {
+        background: rgba(30, 30, 50, 0.98) !important;
+        border-color: #6c63ff !important;
+        box-shadow: 0 0 20px rgba(108, 99, 255, 0.7) !important;
+        color: #ffffff !important;
+    }
+    
+    /* Sidebar selectbox options */
+    [data-testid="stSidebar"] .stSelectbox option {
+        background: rgba(25, 25, 45, 0.98) !important;
+        color: #ffffff !important;
+        font-weight: 500 !important;
+        padding: 0.8rem !important;
+    }
+    
+    /* Sidebar info boxes */
+    [data-testid="stSidebar"] .stInfo {
+        background: rgba(33, 150, 243, 0.2) !important;
+        border-left: 4px solid #2196f3 !important;
+        color: #ffffff !important;
+        border-radius: 5px;
+        padding: 0.75rem !important;
+    }
+    
+    [data-testid="stSidebar"] .stInfo * {
+        color: #ffffff !important;
+    }
+    
+    /* Sidebar caption text */
+    [data-testid="stSidebar"] .stCaption {
+        color: #d0d0d0 !important;
+        font-weight: 500 !important;
+    }
+    
+    /* Sidebar metric containers */
+    [data-testid="stSidebar"] [data-testid="stMetricContainer"] {
+        background: rgba(20, 20, 40, 0.7) !important;
+        border: 1px solid rgba(108, 99, 255, 0.4) !important;
+        border-radius: 10px;
+        padding: 1rem !important;
+    }
+    
+    [data-testid="stSidebar"] [data-testid="stMetricValue"] {
+        color: #a084e8 !important;
+        font-weight: 700 !important;
+    }
+    
+    [data-testid="stSidebar"] [data-testid="stMetricLabel"] {
+        color: #c8c8c8 !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Sidebar buttons */
+    [data-testid="stSidebar"] .stButton > button {
+        background: linear-gradient(135deg, #6c63ff 0%, #8b7fff 100%);
+        color: #ffffff !important;
+        border: 2px solid rgba(108, 99, 255, 0.6);
+        font-weight: 600 !important;
+    }
+    
+    /* Sidebar markdown content */
+    [data-testid="stSidebar"] .stMarkdown strong,
+    [data-testid="stSidebar"] .stMarkdown b {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Sidebar code blocks */
+    [data-testid="stSidebar"] code {
+        background: rgba(20, 20, 40, 0.8) !important;
+        color: #00ff88 !important;
+        border: 1px solid rgba(0, 255, 136, 0.3);
     }
     
     /* Style headers and text for better visibility */
