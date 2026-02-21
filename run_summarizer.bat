@@ -38,17 +38,17 @@ if errorlevel 1 (
 )
 
 echo.
-echo Starting Flask application...
+echo Starting Streamlit application...
 echo.
 echo NOTE: Loading AI models may take several minutes on first run.
 echo Please wait - you will see progress messages as models load...
 echo.
-echo The web summarizer will be available at: http://localhost:5000
+echo The web summarizer will be available at: http://localhost:8501
 echo Press Ctrl+C to stop the server
 echo.
 
-REM Start the Flask application with unbuffered output
-venv\Scripts\python.exe -u app.py
+REM Start the Streamlit application
+venv\Scripts\python.exe -m streamlit run app.py
 if errorlevel 1 (
     echo.
     echo ERROR: Flask application failed to start
