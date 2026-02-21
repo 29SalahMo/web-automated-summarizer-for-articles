@@ -24,8 +24,8 @@ except:
     pass  # Streamlit not initialized yet, that's okay
 
 # Import other dependencies with error handling
-# Don't use st.stop() here as it might cause issues - just set a flag
 _imports_ok = True
+_import_error = None
 try:
     from transformers import (
         pipeline,
@@ -39,9 +39,17 @@ try:
     import PyPDF2
     import docx
     import torch
+    # Only define these if imports succeeded
+    TOKENIZER_CLASSES = {
+        "bart": BartTokenizer,
+        "t5": T5Tokenizer,
+        "pegasus": PegasusTokenizer,
+    }
 except ImportError as e:
     _imports_ok = False
     _import_error = str(e)
+    # Define empty dict if imports fail
+    TOKENIZER_CLASSES = {}
 
 
 # -------------------------
@@ -64,7 +72,9 @@ TOKENIZER_CLASSES = {
 @st.cache_resource(show_spinner=False)
 def load_english_model(model_key):
     """Load a single English model on demand"""
-    if model_key not in MODEL_OPTIONS:
+    if not _imports_ok or model_key not in MODEL_OPTIONS:
+        return None
+    if model_key not in TOKENIZER_CLASSES:
         return None
     try:
         model_name = MODEL_OPTIONS[model_key]
