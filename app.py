@@ -323,10 +323,10 @@ def main():
     except Exception:
         pass  # Already set
     
-    # Add custom CSS for cyberpunk background (simplified to avoid rendering issues)
+    # Add custom CSS for professional neon-themed UI with excellent visibility
     st.markdown("""
     <style>
-    /* Main app background - simplified gradient */
+    /* Main app background - professional dark theme */
     .stApp {
         background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #16213e 100%);
         background-attachment: fixed;
@@ -334,78 +334,150 @@ def main():
     
     /* Make content readable with semi-transparent backgrounds */
     .main .block-container {
-        background: rgba(10, 10, 30, 0.85);
+        background: rgba(15, 15, 35, 0.95);
         border-radius: 15px;
         padding: 2rem;
-        border: 1px solid rgba(108, 99, 255, 0.3);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(108, 99, 255, 0.4);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
     }
     
     /* Style sidebar */
     [data-testid="stSidebar"] {
-        background: rgba(10, 10, 30, 0.9);
-        border-right: 1px solid rgba(108, 99, 255, 0.3);
+        background: rgba(15, 15, 35, 0.95);
+        border-right: 2px solid rgba(108, 99, 255, 0.4);
     }
     
     /* Style headers and text for better visibility */
-    h1, h2, h3 {
+    h1, h2, h3, h4, h5, h6 {
         color: #ffffff !important;
+        font-weight: 600;
     }
     
-    /* Style buttons with cyberpunk glow */
+    /* Style buttons with neon glow effect */
     .stButton > button {
-        background: linear-gradient(135deg, #6c63ff 0%, #a084e8 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 0.5rem 2rem;
-        font-weight: bold;
-        box-shadow: 0 4px 15px rgba(108, 99, 255, 0.4);
+        background: linear-gradient(135deg, #6c63ff 0%, #8b7fff 100%);
+        color: #ffffff !important;
+        border: 2px solid rgba(108, 99, 255, 0.6);
+        border-radius: 10px;
+        padding: 0.6rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        box-shadow: 0 4px 20px rgba(108, 99, 255, 0.5), 0 0 15px rgba(108, 99, 255, 0.3);
         transition: all 0.3s ease;
     }
     
     .stButton > button:hover {
-        box-shadow: 0 6px 20px rgba(108, 99, 255, 0.6);
+        background: linear-gradient(135deg, #7d73ff 0%, #9b8fff 100%);
+        box-shadow: 0 6px 25px rgba(108, 99, 255, 0.7), 0 0 20px rgba(108, 99, 255, 0.5);
         transform: translateY(-2px);
+        border-color: rgba(108, 99, 255, 0.8);
     }
     
-    /* Style text areas and inputs */
-    .stTextArea > div > div > textarea,
+    /* Style select boxes - FIXED TEXT VISIBILITY */
     .stSelectbox > div > div > select {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(108, 99, 255, 0.3);
-        color: #ffffff;
+        background: rgba(20, 20, 40, 0.95) !important;
+        border: 2px solid rgba(108, 99, 255, 0.5) !important;
+        color: #ffffff !important;
         border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        font-weight: 500;
     }
     
-    .stTextArea > div > div > textarea:focus,
     .stSelectbox > div > div > select:focus {
-        border-color: #6c63ff;
-        box-shadow: 0 0 10px rgba(108, 99, 255, 0.5);
+        border-color: #6c63ff !important;
+        box-shadow: 0 0 15px rgba(108, 99, 255, 0.6) !important;
+        outline: none;
+    }
+    
+    /* Style selectbox options dropdown */
+    .stSelectbox option {
+        background: rgba(20, 20, 40, 0.95) !important;
+        color: #ffffff !important;
+        padding: 0.5rem;
+    }
+    
+    /* Style text areas - FIXED TEXT VISIBILITY */
+    .stTextArea > div > div > textarea {
+        background: rgba(20, 20, 40, 0.95) !important;
+        border: 2px solid rgba(108, 99, 255, 0.5) !important;
+        color: #ffffff !important;
+        border-radius: 8px;
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+    
+    .stTextArea > div > div > textarea::placeholder {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+    
+    .stTextArea > div > div > textarea:focus {
+        border-color: #6c63ff !important;
+        box-shadow: 0 0 15px rgba(108, 99, 255, 0.6) !important;
+        outline: none;
+        background: rgba(25, 25, 45, 0.95) !important;
     }
     
     /* Style file uploader */
     .stFileUploader > div {
-        background: rgba(255, 255, 255, 0.05);
-        border: 2px dashed rgba(108, 99, 255, 0.3);
-        border-radius: 8px;
-        padding: 1rem;
+        background: rgba(20, 20, 40, 0.95) !important;
+        border: 2px dashed rgba(108, 99, 255, 0.5) !important;
+        border-radius: 10px;
+        padding: 1.5rem;
     }
     
-    /* Make metrics stand out */
+    .stFileUploader > div:hover {
+        border-color: rgba(108, 99, 255, 0.8) !important;
+        background: rgba(25, 25, 45, 0.95) !important;
+    }
+    
+    /* Style labels - make them visible */
+    label {
+        color: #e0e0e0 !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+    }
+    
+    /* Make metrics stand out with neon colors */
     [data-testid="stMetricValue"] {
         color: #a084e8 !important;
+        font-weight: 700 !important;
+        font-size: 1.5rem !important;
     }
     
-    /* Style success/error messages */
+    [data-testid="stMetricLabel"] {
+        color: #b8b8b8 !important;
+        font-weight: 500 !important;
+    }
+    
+    /* Style success/error messages with neon borders */
     .stSuccess {
-        background: rgba(76, 175, 80, 0.2);
-        border-left: 4px solid #4caf50;
+        background: rgba(76, 175, 80, 0.15) !important;
+        border-left: 4px solid #4caf50 !important;
+        color: #ffffff !important;
+        border-radius: 5px;
     }
     
     .stError {
-        background: rgba(244, 67, 54, 0.2);
-        border-left: 4px solid #f44336;
+        background: rgba(244, 67, 54, 0.15) !important;
+        border-left: 4px solid #f44336 !important;
+        color: #ffffff !important;
+        border-radius: 5px;
+    }
+    
+    .stInfo {
+        background: rgba(33, 150, 243, 0.15) !important;
+        border-left: 4px solid #2196f3 !important;
+        color: #ffffff !important;
+        border-radius: 5px;
+    }
+    
+    .stWarning {
+        background: rgba(255, 152, 0, 0.15) !important;
+        border-left: 4px solid #ff9800 !important;
+        color: #ffffff !important;
+        border-radius: 5px;
     }
     
     /* Add glow to main title */
@@ -420,16 +492,79 @@ def main():
         background-clip: text;
         font-size: 2.5rem;
         font-weight: bold;
+        text-shadow: 0 0 30px rgba(108, 99, 255, 0.3);
     }
     
-    /* Ensure text is readable */
+    /* Ensure all text is readable */
     .stMarkdown, p, span, div {
+        color: #e0e0e0 !important;
+    }
+    
+    /* Style expander headers */
+    .streamlit-expanderHeader {
+        color: #ffffff !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Style tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background: rgba(20, 20, 40, 0.8) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(108, 99, 255, 0.3) !important;
+        border-radius: 8px 8px 0 0;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: rgba(108, 99, 255, 0.2) !important;
+        border-bottom: 2px solid #6c63ff !important;
         color: #ffffff !important;
     }
     
-    /* Style metric labels */
-    [data-testid="stMetricLabel"] {
-        color: #cccccc !important;
+    /* Style download button */
+    .stDownloadButton > button {
+        background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+        color: #ffffff !important;
+        border: 2px solid rgba(0, 212, 255, 0.6);
+        box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4);
+    }
+    
+    .stDownloadButton > button:hover {
+        background: linear-gradient(135deg, #1ae0ff 0%, #00aadd 100%);
+        box-shadow: 0 6px 25px rgba(0, 212, 255, 0.6);
+    }
+    
+    /* Style caption text */
+    .stCaption {
+        color: #b8b8b8 !important;
+    }
+    
+    /* Style code blocks */
+    code {
+        background: rgba(20, 20, 40, 0.8) !important;
+        color: #00ff88 !important;
+        border: 1px solid rgba(0, 255, 136, 0.3);
+        border-radius: 4px;
+        padding: 0.2rem 0.4rem;
+    }
+    
+    /* Improve spacing and readability */
+    .element-container {
+        margin-bottom: 1rem;
+    }
+    
+    /* Style metric containers */
+    [data-testid="stMetricContainer"] {
+        background: rgba(20, 20, 40, 0.6);
+        border: 1px solid rgba(108, 99, 255, 0.3);
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
     </style>
     """, unsafe_allow_html=True)
