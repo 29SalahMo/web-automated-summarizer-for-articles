@@ -60,49 +60,42 @@ TOKENIZER_CLASSES = {
     "pegasus": PegasusTokenizer,
 }
 
-@st.cache_resource(show_spinner=True)
-def load_summarizers():
-    summarizers = {}
-    english_models_loaded = 0
+@st.cache_resource(show_spinner=False)
+def load_english_model(model_key):
+    """Load a single English model on demand"""
+    if model_key not in MODEL_OPTIONS:
+        return None
+    try:
+        model_name = MODEL_OPTIONS[model_key]
+        tokenizer_class = TOKENIZER_CLASSES[model_key]
+        tokenizer = tokenizer_class.from_pretrained(model_name)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+        return pipeline("summarization", model=model, tokenizer=tokenizer)
+    except Exception as e:
+        print(f"Warning: Failed to load English model '{model_key}': {e}")
+        return None
 
-    for key, model_name in MODEL_OPTIONS.items():
-        try:
-            tokenizer_class = TOKENIZER_CLASSES[key]
-            tokenizer = tokenizer_class.from_pretrained(model_name)
-            model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
-            summarizers[key] = pipeline("summarization", model=model, tokenizer=tokenizer)
-            english_models_loaded += 1
-        except Exception as e:
-            # Don't use st.warning in cached function - use print instead
-            print(f"Warning: Failed to load English model '{key}': {e}")
-            summarizers[key] = None
-
-    # Arabic model - mT5 needs special handling
-    arabic_model_loaded = False
+@st.cache_resource(show_spinner=False)
+def load_arabic_model():
+    """Load Arabic model on demand"""
     try:
         arabic_model_name = "csebuetnlp/mT5_multilingual_XLSum"
         arabic_tokenizer = AutoTokenizer.from_pretrained(arabic_model_name)
         arabic_model = AutoModelForSeq2SeqLM.from_pretrained(arabic_model_name)
-        # Store both pipeline and raw model/tokenizer for flexibility
+        # Try pipeline first
         try:
-            # Try pipeline first
             arabic_pipeline = pipeline("summarization", model=arabic_model, tokenizer=arabic_tokenizer)
-            summarizers["arabic"] = {"pipeline": arabic_pipeline, "type": "pipeline"}
-        except Exception as pipe_error:
+            return {"pipeline": arabic_pipeline, "type": "pipeline"}
+        except Exception:
             # If pipeline fails, store model and tokenizer for manual generation
-            summarizers["arabic"] = {
+            return {
                 "model": arabic_model,
                 "tokenizer": arabic_tokenizer,
                 "type": "manual"
             }
-        arabic_model_loaded = True
     except Exception as e:
-        error_msg = str(e)
-        # Don't use st.warning here as it might cause issues in cached function
-        print(f"Warning: Failed to load Arabic model: {error_msg[:200]}")
-        summarizers["arabic"] = None
-
-    return summarizers, english_models_loaded, arabic_model_loaded
+        print(f"Warning: Failed to load Arabic model: {str(e)[:200]}")
+        return None
 
 
 @st.cache_resource(show_spinner=False)
@@ -182,17 +175,17 @@ def summarize_text(
         elif tone == "tweet":
             original_text = f"Summarize in a tweet style:\n{original_text}"
 
-    # Pick summarizer
+    # Pick summarizer (already loaded in main function)
     if language == "english":
         summarizer = summarizers.get(model_choice)
         if not summarizer:
-            available_english = [
-                k for k, v in summarizers.items() if v is not None and k != "arabic"
-            ]
-            if available_english:
-                summarizer = summarizers[available_english[0]]
-                model_choice = available_english[0]
-            else:
+            # Try any available English model
+            for key, val in summarizers.items():
+                if key != "arabic" and val is not None:
+                    summarizer = val
+                    model_choice = key
+                    break
+            if not summarizer:
                 raise RuntimeError("No English models available.")
     else:
         arabic_data = summarizers.get("arabic")
