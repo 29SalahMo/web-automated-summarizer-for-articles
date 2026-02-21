@@ -100,7 +100,12 @@ def load_arabic_model():
 
 @st.cache_resource(show_spinner=False)
 def load_embedder():
-    return SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
+    """Load sentence transformer for semantic similarity"""
+    try:
+        return SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
+    except Exception as e:
+        print(f"Warning: Failed to load embedder: {e}")
+        return None
 
 
 def extract_text_from_pdf(file_bytes: bytes) -> str:
@@ -435,18 +440,20 @@ def main():
             st.info("💡 Tip: Try with a shorter text or check if models are loading correctly.")
 
 
-# Streamlit runs the entire file, so call main() directly
-# Wrap everything in try-except to catch any errors
-try:
-    main()
-except Exception as e:
-    # If st is available, show error in UI
+# Streamlit runs the entire file
+# Call main() - Streamlit will handle execution
+if __name__ == "__main__" or True:  # Always execute for Streamlit
     try:
-        st.error(f"❌ Application Error: {str(e)}")
-        with st.expander("🔍 Show Full Error Details"):
-            st.code(traceback.format_exc())
-        st.info("💡 Please check the logs or try refreshing the page. If the error persists, check the Hugging Face Spaces logs.")
-    except:
-        # If st is not available, print to console
-        print(f"ERROR: {str(e)}")
-        traceback.print_exc()
+        main()
+    except Exception as e:
+        # Show error in UI
+        try:
+            st.error(f"❌ Application Error: {str(e)}")
+            with st.expander("🔍 Show Full Error Details"):
+                st.code(traceback.format_exc())
+            st.info("💡 Please check the logs or try refreshing the page.")
+        except Exception as e2:
+            # If we can't even show error, print to console
+            print(f"CRITICAL ERROR: {str(e)}")
+            print(f"Error showing error: {str(e2)}")
+            traceback.print_exc()
