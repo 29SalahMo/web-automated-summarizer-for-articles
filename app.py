@@ -4,19 +4,31 @@ import re
 import sys
 import traceback
 
-import streamlit as st
-from transformers import (
-    pipeline,
-    AutoModelForSeq2SeqLM,
-    PegasusTokenizer,
-    BartTokenizer,
-    T5Tokenizer,
-    AutoTokenizer,
-)
-from sentence_transformers import SentenceTransformer, util
-import PyPDF2
-import docx
-import torch
+# Import Streamlit first for error display
+try:
+    import streamlit as st
+except ImportError:
+    print("ERROR: streamlit is not installed. Please install it with: pip install streamlit")
+    sys.exit(1)
+
+# Import other dependencies with error handling
+try:
+    from transformers import (
+        pipeline,
+        AutoModelForSeq2SeqLM,
+        PegasusTokenizer,
+        BartTokenizer,
+        T5Tokenizer,
+        AutoTokenizer,
+    )
+    from sentence_transformers import SentenceTransformer, util
+    import PyPDF2
+    import docx
+    import torch
+except ImportError as e:
+    st.error(f"❌ Missing required package: {str(e)}")
+    st.info("Please install all requirements: pip install -r requirements.txt")
+    st.stop()
 
 
 # -------------------------
