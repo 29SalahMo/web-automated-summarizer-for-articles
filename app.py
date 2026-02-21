@@ -108,6 +108,8 @@ def load_arabic_model():
 @st.cache_resource(show_spinner=False)
 def load_embedder():
     """Load sentence transformer for semantic similarity"""
+    if not _imports_ok:
+        return None
     try:
         return SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
     except Exception as e:
@@ -463,5 +465,24 @@ def main():
             st.info("💡 Tip: Try with a shorter text or check if models are loading correctly.")
 
 
-# Streamlit executes the entire file - call main() directly
-main()
+# Streamlit executes the entire file
+# Wrap main() in try-except to catch and display any errors
+if __name__ == "__main__" or True:  # Always execute for Streamlit
+    try:
+        main()
+    except Exception as e:
+        # Display error in Streamlit UI
+        try:
+            st.error(f"❌ **Application Error:** {str(e)}")
+            with st.expander("🔍 Click to see full error details"):
+                st.code(traceback.format_exc())
+            st.warning("💡 If this error persists, check the Hugging Face Spaces logs.")
+        except Exception as e2:
+            # If we can't display error, at least try to show something
+            try:
+                st.error("❌ An error occurred. Please check the logs.")
+            except:
+                # Last resort - print to console
+                import sys
+                print(f"FATAL ERROR: {e}", file=sys.stderr)
+                traceback.print_exc()
