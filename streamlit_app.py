@@ -1,19 +1,26 @@
 import os
 import io
 import re
+import sys
+import traceback
 
 import streamlit as st
-from transformers import (
-    pipeline,
-    AutoModelForSeq2SeqLM,
-    PegasusTokenizer,
-    BartTokenizer,
-    T5Tokenizer,
-    AutoTokenizer,
-)
-from sentence_transformers import SentenceTransformer, util
-import PyPDF2
-import docx
+
+try:
+    from transformers import (
+        pipeline,
+        AutoModelForSeq2SeqLM,
+        PegasusTokenizer,
+        BartTokenizer,
+        T5Tokenizer,
+        AutoTokenizer,
+    )
+    from sentence_transformers import SentenceTransformer, util
+    import PyPDF2
+    import docx
+except ImportError as e:
+    st.error(f"Missing required package: {e}")
+    st.stop()
 
 
 # -------------------------
@@ -194,13 +201,17 @@ def summarize_text(
 # -------------------------
 
 def main():
-    st.set_page_config(
-        page_title="Web-Based Article Summarizer",
-        layout="wide",
-    )
+    try:
+        st.set_page_config(
+            page_title="Web-Based Article Summarizer",
+            layout="wide",
+            initial_sidebar_state="expanded",
+        )
+    except Exception:
+        pass  # Already set
 
-    st.title("Web-Based Automated Article Summarizer")
-    st.write(
+    st.title("🌐 Web-Based Automated Article Summarizer")
+    st.markdown(
         "Summarize long articles in **English** and **Arabic** using state-of-the-art transformer models."
     )
 
@@ -270,8 +281,13 @@ def main():
                 return
 
             with st.spinner("Loading models (if not already loaded)..."):
-                summarizers, english_loaded, arabic_loaded = load_summarizers()
-                embedder = load_embedder()
+                try:
+                    summarizers, english_loaded, arabic_loaded = load_summarizers()
+                    embedder = load_embedder()
+                except Exception as model_error:
+                    st.error(f"Failed to load models: {str(model_error)}")
+                    st.info("This might be due to memory limitations or network issues. Please try again.")
+                    return
 
             result = summarize_text(
                 summarizers=summarizers,
@@ -309,8 +325,15 @@ def main():
 
         except Exception as e:
             st.error(f"An error occurred during summarization: {e}")
+            st.code(traceback.format_exc())
+            st.info("💡 Tip: Try with a shorter text or check if models are loading correctly.")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        st.error(f"Application Error: {str(e)}")
+        st.exception(e)
+        st.info("Please check the logs or try refreshing the page.")
 
