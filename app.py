@@ -477,13 +477,50 @@ def main():
     """, unsafe_allow_html=True)
 
     st.title("🌐 Web-Based Automated Article Summarizer")
+    
+    # Add interactive header with stats
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("✨ AI Models", "3", help="BART, T5, and mT5 models available")
+    with col2:
+        st.metric("🌍 Languages", "2", help="English and Arabic support")
+    with col3:
+        st.metric("📄 Formats", "3", help="PDF, DOCX, and TXT files")
+    with col4:
+        if 'summary_count' not in st.session_state:
+            st.session_state.summary_count = 0
+        st.metric("📊 Summaries", st.session_state.summary_count, help="Total summaries created")
+    
     st.markdown(
         "Summarize long articles in **English** and **Arabic** using state-of-the-art transformer models."
     )
+    
+    # Add interactive tips section
+    with st.expander("💡 Quick Tips & Examples", expanded=False):
+        tip_col1, tip_col2 = st.columns(2)
+        with tip_col1:
+            st.info("""
+            **💡 Pro Tips:**
+            - Use **Medium** length for balanced summaries
+            - **BART** works best for news articles
+            - **T5** is faster for general text
+            - Upload PDFs for research papers
+            """)
+        with tip_col2:
+            if st.button("📝 Load Sample Text", use_container_width=True):
+                sample_text = """Artificial intelligence has revolutionized many aspects of our daily lives, from the way we communicate to how we work and learn. Machine learning algorithms can now process vast amounts of data, recognize patterns, and make predictions with remarkable accuracy. Natural language processing enables computers to understand and generate human language, powering virtual assistants and translation services. Computer vision allows machines to interpret and analyze visual information, driving advances in autonomous vehicles and medical imaging. As AI technology continues to evolve, it promises to solve complex problems and create new opportunities across various industries."""
+                st.session_state.sample_text = sample_text
+                st.success("Sample text loaded! Check the text area below.")
+            if st.button("🔄 Clear All", use_container_width=True):
+                st.session_state.sample_text = ""
+                st.rerun()
 
     with st.sidebar:
-        st.header("Settings")
-        language = st.selectbox("Language", ["english", "arabic"], index=0)
+        st.header("⚙️ Settings")
+        
+        # Add model info with tooltips
+        st.markdown("### 🤖 AI Model Selection")
+        language = st.selectbox("Language", ["english", "arabic"], index=0, help="Choose the language of your text")
 
         if language == "english":
             model_choice = st.selectbox("Model", ["bart", "t5"], index=0)
@@ -507,19 +544,55 @@ def main():
             "Note: First run may take a while to download models. Subsequent runs are faster."
         )
 
-    tab_text, tab_file = st.tabs(["✍️ Paste Text", "📄 Upload File"])
+    tab_text, tab_file = st.tabs(["✍️ Paste Text", "📄 Upload File", "📚 Examples"])
 
     input_text = ""
     uploaded_file = None
 
     with tab_text:
-        input_text = st.text_area(
-            "Paste your article here",
-            height=250,
-            placeholder="Paste an article, report, or any long text...",
-        )
+        # Check for sample text
+        if 'sample_text' in st.session_state and st.session_state.sample_text:
+            input_text = st.text_area(
+                "Paste your article here",
+                value=st.session_state.sample_text,
+                height=250,
+                placeholder="Paste an article, report, or any long text...",
+                key="text_input",
+                help="Paste your text here or use the sample text button above"
+            )
+            st.session_state.sample_text = ""  # Clear after use
+        else:
+            input_text = st.text_area(
+                "Paste your article here",
+                height=250,
+                placeholder="Paste an article, report, or any long text...",
+                key="text_input",
+                help="Paste your text here or use the sample text button above"
+            )
+        
+        # Real-time word count with visual indicator
         if input_text.strip():
-            st.caption(f"Word count: {len(input_text.strip().split())}")
+            word_count = len(input_text.strip().split())
+            char_count = len(input_text.strip())
+            
+            col_w1, col_w2, col_w3 = st.columns(3)
+            with col_w1:
+                st.metric("📝 Words", word_count)
+            with col_w2:
+                st.metric("🔤 Characters", f"{char_count:,}")
+            with col_w3:
+                # Estimate reading time
+                reading_time = max(1, word_count // 200)  # Average 200 words per minute
+                st.metric("⏱️ Reading Time", f"~{reading_time} min")
+            
+            # Progress bar for text length
+            if word_count > 0:
+                progress_pct = min(100, (word_count / 5000) * 100)  # Scale to 5000 words
+                st.progress(progress_pct / 100)
+                if word_count < 100:
+                    st.warning("⚠️ Very short text. Summary options may be limited.")
+                elif word_count > 5000:
+                    st.info("ℹ️ Large text will be processed in chunks automatically.")
 
     with tab_file:
         uploaded_file = st.file_uploader(
@@ -607,12 +680,28 @@ def main():
             if result["warning"]:
                 st.info(result["warning"])
 
-            st.download_button(
-                "Download Summary as TXT",
-                data=result["summary"],
-                file_name="summary.txt",
-                mime="text/plain",
-            )
+            # Action buttons
+            st.markdown("---")
+            action_col1, action_col2, action_col3 = st.columns(3)
+            with action_col1:
+                st.download_button(
+                    "💾 Download TXT",
+                    data=result["summary"],
+                    file_name=f"summary_{st.session_state.summary_count}.txt",
+                    mime="text/plain",
+                    use_container_width=True
+                )
+            with action_col2:
+                if st.button("🔄 Summarize Again", use_container_width=True):
+                    st.rerun()
+            with action_col3:
+                if st.button("📊 View Stats", use_container_width=True):
+                    st.info(f"""
+                    **Session Statistics:**
+                    - Total Summaries: {st.session_state.summary_count}
+                    - Total Words Processed: {st.session_state.total_words_processed:,}
+                    - Average Words per Summary: {st.session_state.total_words_processed // max(1, st.session_state.summary_count):,}
+                    """)
 
     except Exception as e:
             st.error(f"An error occurred during summarization: {e}")
