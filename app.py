@@ -85,6 +85,8 @@ def load_english_model(model_key):
 @st.cache_resource(show_spinner=False)
 def load_arabic_model():
     """Load Arabic model on demand"""
+    if not _imports_ok:
+        return None
     try:
         arabic_model_name = "csebuetnlp/mT5_multilingual_XLSum"
         arabic_tokenizer = AutoTokenizer.from_pretrained(arabic_model_name)
