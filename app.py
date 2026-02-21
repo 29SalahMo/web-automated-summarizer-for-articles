@@ -69,41 +69,55 @@ MODEL_OPTIONS = {
 def load_english_model(model_key):
     """Load a single English model on demand"""
     if not _imports_ok or model_key not in MODEL_OPTIONS:
+        print(f"ERROR: Cannot load model '{model_key}': imports failed or model not in options")
         return None
     if model_key not in TOKENIZER_CLASSES:
+        print(f"ERROR: Tokenizer class not found for '{model_key}'")
         return None
     try:
         model_name = MODEL_OPTIONS[model_key]
+        print(f"Loading English model: {model_name}...")
         tokenizer_class = TOKENIZER_CLASSES[model_key]
         tokenizer = tokenizer_class.from_pretrained(model_name)
         model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
-        return pipeline("summarization", model=model, tokenizer=tokenizer)
+        pipeline_obj = pipeline("summarization", model=model, tokenizer=tokenizer)
+        print(f"Successfully loaded English model: {model_name}")
+        return pipeline_obj
     except Exception as e:
-        print(f"Warning: Failed to load English model '{model_key}': {e}")
+        error_msg = f"Failed to load English model '{model_key}': {str(e)}"
+        print(f"ERROR: {error_msg}")
+        traceback.print_exc()
         return None
 
 @st.cache_resource(show_spinner=False)
 def load_arabic_model():
     """Load Arabic model on demand"""
     if not _imports_ok:
+        print("ERROR: Cannot load Arabic model: imports failed")
         return None
     try:
         arabic_model_name = "csebuetnlp/mT5_multilingual_XLSum"
+        print(f"Loading Arabic model: {arabic_model_name}...")
         arabic_tokenizer = AutoTokenizer.from_pretrained(arabic_model_name)
         arabic_model = AutoModelForSeq2SeqLM.from_pretrained(arabic_model_name)
+        print("Arabic model and tokenizer loaded, creating pipeline...")
         # Try pipeline first
         try:
             arabic_pipeline = pipeline("summarization", model=arabic_model, tokenizer=arabic_tokenizer)
+            print("Successfully created Arabic pipeline")
             return {"pipeline": arabic_pipeline, "type": "pipeline"}
-        except Exception:
+        except Exception as pipeline_error:
             # If pipeline fails, store model and tokenizer for manual generation
+            print(f"Pipeline creation failed, using manual generation: {str(pipeline_error)[:200]}")
             return {
                 "model": arabic_model,
                 "tokenizer": arabic_tokenizer,
                 "type": "manual"
             }
     except Exception as e:
-        print(f"Warning: Failed to load Arabic model: {str(e)[:200]}")
+        error_msg = f"Failed to load Arabic model: {str(e)}"
+        print(f"ERROR: {error_msg}")
+        traceback.print_exc()
         return None
 
 
@@ -887,38 +901,103 @@ def main():
                 st.error("The provided text/file appears to be empty.")
                 return
 
-            with st.spinner("Loading models (if not already loaded)..."):
+            # Create progress container
+            progress_container = st.container()
+            with progress_container:
+                progress_bar = st.progress(0)
+                status_text = st.empty()
+                
+                status_text.info("🔄 Initializing AI models...")
+                progress_bar.progress(10)
+                
                 try:
                     # Load models on demand
                     summarizers = {}
+                    embedder = None
+                    
                     if language == "english":
+                        status_text.info(f"🤖 Loading {model_choice.upper()} model...")
+                        progress_bar.progress(30)
                         # Load only the selected English model
                         summarizer = load_english_model(model_choice)
                         if summarizer:
                             summarizers[model_choice] = summarizer
+                            progress_bar.progress(50)
+                            status_text.success(f"✅ {model_choice.upper()} model loaded successfully!")
                         else:
                             # Try fallback models
+                            status_text.warning(f"⚠️ {model_choice.upper()} not available, trying alternatives...")
                             for fallback_key in MODEL_OPTIONS.keys():
                                 if fallback_key != model_choice:
                                     fallback = load_english_model(fallback_key)
                                     if fallback:
                                         summarizers[fallback_key] = fallback
                                         model_choice = fallback_key
+                                        progress_bar.progress(50)
+                                        status_text.success(f"✅ Using {fallback_key.upper()} model instead")
                                         break
                     else:
                         # Load Arabic model
+                        status_text.info("🌍 Loading Arabic (mT5) model...")
+                        progress_bar.progress(30)
                         arabic_data = load_arabic_model()
                         if arabic_data:
                             summarizers["arabic"] = arabic_data
+                            progress_bar.progress(50)
+                            status_text.success("✅ Arabic model loaded successfully!")
+                        else:
+                            status_text.error("❌ Failed to load Arabic model")
                     
                     if not summarizers:
-                        st.error("Failed to load any models. Please check the logs or try again.")
+                        progress_bar.progress(0)
+                        status_text.error("❌ Failed to load any models")
+                        st.error("""
+                        **Model Loading Failed**
+                        
+                        Possible reasons:
+                        - Network connection issues (models need to be downloaded)
+                        - Insufficient memory/resources
+                        - Model download interrupted
+                        
+                        **Solutions:**
+                        1. Check your internet connection
+                        2. Wait a moment and try again (first-time download can take 2-5 minutes)
+                        3. Try refreshing the page
+                        4. For Arabic: The mT5 model is large and may need more time/resources
+                        """)
+                        with st.expander("🔍 Technical Details"):
+                            st.code("Check the browser console or Streamlit logs for detailed error messages")
                         return
                     
+                    status_text.info("🧠 Loading semantic analysis model...")
+                    progress_bar.progress(70)
                     embedder = load_embedder()
+                    if embedder:
+                        progress_bar.progress(80)
+                        status_text.success("✅ All models loaded! Processing your text...")
+                        progress_bar.progress(90)
+                    else:
+                        status_text.warning("⚠️ Semantic analysis model not available, continuing without it...")
+                        progress_bar.progress(90)
+                        
                 except Exception as model_error:
-                    st.error(f"Failed to load models: {str(model_error)}")
-                    st.info("This might be due to memory limitations or network issues. Please try again.")
+                    progress_bar.progress(0)
+                    status_text.error("❌ Model loading error")
+                    error_details = str(model_error)
+                    st.error(f"**Model Loading Error:** {error_details}")
+                    st.info("""
+                    **This might be due to:**
+                    - Memory limitations (models are large)
+                    - Network issues (downloading models)
+                    - Resource constraints on the server
+                    
+                    **Please try:**
+                    1. Wait a moment and try again
+                    2. Try with a different model
+                    3. Refresh the page
+                    """)
+                    with st.expander("🔍 Full Error Details"):
+                        st.code(traceback.format_exc())
                     return
 
             result = summarize_text(
